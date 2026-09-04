@@ -1,0 +1,5 @@
+# Copy this file to .dev.vars for local development.
+# Do not commit .dev.vars.
+
+DASHSCOPE_API_KEY=replace-with-your-own-key
+DASHSCOPE_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1

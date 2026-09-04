@@ -37,6 +37,20 @@ flowchart LR
     I --> B
 ```
 
+## 作品集展示
+
+以下内容均为脱敏原型与流程材料，用于说明 V1 的产品设计，不包含真实店铺或客户数据。
+
+| 商家客服中心 | 飞鸽侧边栏 Agent |
+| --- | --- |
+| ![商家客服中心原型](docs/images/merchant-dashboard-prototype.png) | ![飞鸽侧边栏 Agent 原型](docs/images/feige-agent-prototype.png) |
+
+**V1 产品流程图**
+
+![电商客服 Agent V1 产品流程](docs/images/v1-product-flow.png)
+
+完整迭代记录见 [CHANGELOG.md](CHANGELOG.md)。
+
 ## 4. 系统由什么组成？
 
 ```text

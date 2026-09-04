@@ -21,6 +21,9 @@
 *.xlsx
 *.xls
 *.csv
+# The only tracked spreadsheet is a sanitized V1 evaluation artifact.
+!docs/evaluation/
+!docs/evaluation/*.xlsx
 *.tgz
 *.tsbuildinfo
 *.log

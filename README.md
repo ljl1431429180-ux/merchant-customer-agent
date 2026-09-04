@@ -271,6 +271,8 @@ DASHSCOPE_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
 - 对发货时间、售后、退款、尺码建议等服务承诺类问题转人工；
 - 已确认商品资料可形成自然、简短的客服回复。
 
+V1 的人工评测口径、样本范围与结果见 [评测说明](docs/evaluation.md)，可下载 [评测表](docs/evaluation/merchant-customer-agent-v1-evaluation.xlsx) 查看用例明细。
+
 ## 10. 测试期说明与后续规划
 
 当前项目处于测试期，重点验证“商品事实优先 + 风险转人工”的可控客服链路。它不是已经大规模商用的全能客服系统。

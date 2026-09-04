@@ -1,0 +1,37 @@
+{
+  "manifest_version": 3,
+  "name": "商家客服 Agent（全店同步）",
+  "version": "0.7.9",
+  "description": "在飞鸽页面识别平台自动回复和人工接管；仅对已确认商品资料的低风险问答提供受控自动回复。",
+  "permissions": ["storage", "tabs", "scripting"],
+  "host_permissions": ["https://your-dashboard.example.com/*", "https://fxg.jinritemai.com/*"],
+  "action": {
+    "default_title": "商家客服 Agent",
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://im.jinritemai.com/pc_seller_v2/*"],
+      "js": ["feige-listener.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://your-dashboard.example.com/*"],
+      "js": ["dashboard-bridge.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://fxg.jinritemai.com/ffa/g/list*"],
+      "js": ["douyin-product-listener.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://fxg.jinritemai.com/ffa/g/create*"],
+      "js": ["douyin-detail-listener.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

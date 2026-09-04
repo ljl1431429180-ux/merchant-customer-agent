@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>商家客服 Agent</title>
+    <style>
+      body { width: 320px; margin: 0; padding: 18px; color: #172033; font: 14px/1.55 system-ui, "Microsoft YaHei", sans-serif; background: #f7f8fc; }
+      h1 { margin: 0 0 4px; font-size: 17px; } .sub { margin: 0 0 16px; color: #65718a; }
+      .card { padding: 13px; border: 1px solid #e3e7f0; border-radius: 12px; background: #fff; } .row { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+      button { border: 0; border-radius: 9px; padding: 8px 12px; color:#fff; background:#6941d9; cursor:pointer; } button.off { background:#6b7280; }
+      #status { font-weight: 700; } #detail, #draft { margin: 8px 0 0; color:#536079; white-space: pre-wrap; } .safe { margin-top: 13px; font-size: 12px; color:#15803d; }
+      #draftCard, #autoCard { margin-top: 10px; } #createDraft, #fillDraft { margin-top: 10px; width: 100%; } #createDraft:disabled, #fillDraft:disabled { cursor: not-allowed; opacity: .55; }
+    </style>
+  </head>
+  <body>
+    <h1>商家客服 Agent</h1>
+    <p class="sub">飞鸽与人工优先 · 商品事实可受控自动回复</p>
+    <div class="card"><div class="row"><span id="status">正在读取状态…</span><button id="toggle">…</button></div><p id="detail">打开飞鸽会话后，这里会显示最近的处理结果。</p></div>
+    <div id="draftCard" class="card"><strong>回复草稿</strong><p id="draft">只有“Agent 可处理”的会话可生成草稿。</p><button id="createDraft" disabled>生成草稿</button><button id="fillDraft" disabled>填入飞鸽输入框</button></div>
+    <div id="autoCard" class="card"><div class="row"><strong>受控自动回复</strong><button id="autoToggle" class="off">保持关闭</button></div><p id="auto">仅限已确认商品资料的单一材质、颜色或尺码问题。</p></div>
+    <p class="safe">开启后仍以飞鸽原生回复和人工接管为最高优先级；价格、库存、优惠、物流、售后和无法匹配商品一律不自动发送。</p>
+    <script src="popup.js"></script>
+  </body>
+</html>

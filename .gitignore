@@ -1,0 +1,34 @@
+# Dependencies and build output
+/node_modules
+/.next
+/.vinext
+/dist
+/out
+/.wrangler
+
+# Local environment and deployment binding
+.env*
+!.env.example
+/.openai
+
+# Never publish real shop data, browser profiles, or local execution traces
+/data
+/profiles
+/outputs
+/work
+*.xlsx
+*.xls
+*.csv
+*.tgz
+*.tsbuildinfo
+*.log
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.idea
+.vscode
+
+# Certificates / private keys
+*.pem
+*.key

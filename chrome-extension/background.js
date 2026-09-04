@@ -225,14 +225,13 @@ function autoPreflight(event, draft, policy) {
   const reasons = [];
   if (!event || event.status !== 'agent_candidate') reasons.push('飞鸽未处理的候选会话才可进入预检。');
   if (!draft?.text) reasons.push('尚未生成草稿。');
-  // 资料不充分时绝不能自动发送具体商品事实；但也不能让客户无人回应。
-  // 此时只发送固定的“正在核实”提示，后续交由人工继续处理。
-  if (!draft?.fallback) {
-    if (draft?.needsHuman) reasons.push('草稿已标记为需要人工处理。');
-    if (draft?.productMatch !== 'matched' || !draft?.knowledgeUsed) reasons.push('未匹配到足够的已确认商品资料。');
-    if (!draft?.autoSendAllowed) reasons.push('这条草稿不是仅基于已确认商品事实生成，不能自动发送。');
-    if (!productFactOnly) reasons.push('仅允许单一的材质、颜色或尺码咨询；涉及价格、库存、优惠、物流、售后或多问题时转人工。');
-  }
+  // 资料不充分时可保留“正在核实”的草稿供人工查看，但绝不能自动发送。
+  // 自动发送必须同时满足：唯一商品、已确认资料、单一低风险商品事实问题。
+  if (draft?.fallback) reasons.push('未查到可自动发送的已确认商品资料，草稿仅供人工查看。');
+  if (draft?.needsHuman) reasons.push('草稿已标记为需要人工处理。');
+  if (draft?.productMatch !== 'matched' || !draft?.knowledgeUsed) reasons.push('未匹配到足够的已确认商品资料。');
+  if (!draft?.autoSendAllowed) reasons.push('这条草稿不是仅基于已确认商品事实生成，不能自动发送。');
+  if (!productFactOnly) reasons.push('仅允许单一的材质、颜色或尺码咨询；涉及价格、库存、优惠、物流、售后或多问题时转人工。');
   if (!policy?.enabled || !policy?.maxPerHour) reasons.push('自动回复总开关保持关闭。');
   return {
     eligible: reasons.length === 0,
@@ -251,7 +250,8 @@ function draftFromResult(result, event) {
     needsHuman: fallback ? false : Boolean(result.needsHuman),
     productMatch: result.productMatch || 'unknown',
     knowledgeUsed: Number(result.knowledgeUsed || 0),
-    autoSendAllowed: autoSendAllowed || fallback,
+    // 回退话术只能作为人工可见草稿，不能因“内容通用”而进入自动发送。
+    autoSendAllowed,
     fallback,
     createdAt: new Date().toISOString(),
   };
@@ -269,7 +269,8 @@ function fallbackDraft(event) {
     needsHuman: false,
     productMatch: 'unknown',
     knowledgeUsed: 0,
-    autoSendAllowed: true,
+    // 后台连接失败或资料不足时，不向客户自动发送固定话术。
+    autoSendAllowed: false,
     fallback: true,
     createdAt: new Date().toISOString(),
   };

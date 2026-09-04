@@ -128,6 +128,9 @@ export type MerchantShopScope = {
   shop: ShopConnection;
 };
 
+/** Identity has already been verified by the request boundary before reaching data access. */
+export type MerchantIdentity = { authId: string; email: string };
+
 export type SecurityActivity = { id: string; action: string; createdAt: number; shopId: string | null };
 export type StoreSyncProduct = { sku: string; name: string; priceCents: number; stock: number; listingStatus: 'active' | 'out_of_stock' | 'off_shelf' };
 export type SyncRun = { id: string; platform: string; scope: string; sourceTotal: number; processed: number; status: 'completed' | 'failed'; detail: string; createdAt: number };
@@ -387,9 +390,8 @@ function mapMerchantWorkspace(row: Record<string, unknown>): MerchantWorkspace {
  * Private Sites provide this identity after ChatGPT sign-in. The first verified owner
  * claims the existing local workspace; later identities receive no data by default.
  */
-export async function getMerchantWorkspace(db: D1Database, headers: Headers) {
-  const authId = headers.get('oai-authenticated-user-id')?.trim();
-  if (!authId) return null;
+export async function getMerchantWorkspace(db: D1Database, identity: MerchantIdentity) {
+  const { authId, email } = identity;
   await ensureCatalogSchema(db);
   const existing = await db.prepare('SELECT * FROM merchants WHERE owner_auth_id = ?').bind(authId).first<Record<string, unknown>>();
   if (existing) return mapMerchantWorkspace(existing);
@@ -398,7 +400,6 @@ export async function getMerchantWorkspace(db: D1Database, headers: Headers) {
   // Preserve the first merchant and its existing store data. Later signed-in
   // users receive a clean independent workspace instead of sharing it.
   if (localWorkspace) {
-    const email = headers.get('oai-authenticated-user-email')?.trim() || '';
     const id = `merchant-${crypto.randomUUID()}`;
     const now = Date.now();
     await db.prepare(
@@ -407,7 +408,6 @@ export async function getMerchantWorkspace(db: D1Database, headers: Headers) {
     return { id, displayName: email || '新商家', email, createdAt: now } satisfies MerchantWorkspace;
   }
 
-  const email = headers.get('oai-authenticated-user-email')?.trim() || '';
   const now = Date.now();
   await db.prepare(
     'INSERT INTO merchants (id, owner_auth_id, display_name, email, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)',
@@ -444,9 +444,8 @@ export async function createShopConnection(db: D1Database, merchantId: string, i
 }
 
 /** Resolves a requested shop only after proving that it belongs to the signed-in merchant. */
-export async function resolveMerchantShopScope(db: D1Database, headers: Headers, requestedShopId?: string | null): Promise<MerchantShopScope | null> {
-  const merchant = await getMerchantWorkspace(db, headers);
-  if (!merchant) return null;
+export async function resolveMerchantShopScope(db: D1Database, identity: MerchantIdentity, requestedShopId?: string | null): Promise<MerchantShopScope | null> {
+  const merchant = await getMerchantWorkspace(db, identity);
   const shops = await listShopConnections(db, merchant.id);
   const shop = requestedShopId ? shops.find((item) => item.id === requestedShopId) : shops[0];
   return shop ? { merchant, shop } : null;

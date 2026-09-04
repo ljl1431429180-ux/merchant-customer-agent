@@ -1,18 +1,19 @@
 import { env } from 'cloudflare:workers';
-import { createShopConnection, getMerchantWorkspace, listConnectorCatalog, listShopConnections, type ShopConnection } from '@/lib/catalog-db';
+import { createShopConnection, listConnectorCatalog, listShopConnections, type ShopConnection } from '@/lib/catalog-db';
+import { requestMerchantWorkspace } from '@/lib/request-shop';
 
 export const runtime = 'edge';
 
 /** Connection metadata only. Product, source, knowledge, and conversation records remain scoped by shop_id. */
 export async function GET(request: Request) {
-  const merchant = await getMerchantWorkspace(env.DB, request.headers);
+  const merchant = await requestMerchantWorkspace(env.DB, request);
   if (!merchant) return Response.json({ error: '当前账号尚未获准访问任何商家工作空间。' }, { status: 403 });
   const shops = await listShopConnections(env.DB, merchant.id);
   return Response.json({ merchant, shops, connectors: listConnectorCatalog(), activeShopId: shops[0]?.id ?? null });
 }
 
 export async function POST(request: Request) {
-  const merchant = await getMerchantWorkspace(env.DB, request.headers);
+  const merchant = await requestMerchantWorkspace(env.DB, request);
   if (!merchant) return Response.json({ error: '请先登录后再绑定店铺。' }, { status: 401 });
   const body: unknown = await request.json().catch(() => null);
   const value = body && typeof body === 'object' ? body as Record<string, unknown> : {};
